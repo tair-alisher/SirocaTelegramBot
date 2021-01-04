@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramBot.Helpers;
 
-namespace TelegramBot.Classes
+namespace TelegramBot.Services
 {
     public static class Appointment
     {
@@ -61,7 +62,7 @@ namespace TelegramBot.Classes
                         {
                             new[] {InlineKeyboardButton.WithCallbackData("Shox Med Center (Ойбек)")},
                             new[] {InlineKeyboardButton.WithCallbackData("Здоровая семья (Чилназар)")},
-                            new[] {InlineKeyboardButton.WithCallbackData("\xD83D\xDD19 Назад", "showappointmentlist"),}
+                            new[] {InlineKeyboardButton.WithCallbackData(Options.Back, Options.ShowAppointmentList),}
                         });
                         break;
                     case "ultrasound":
@@ -70,7 +71,7 @@ namespace TelegramBot.Classes
                             new[] {InlineKeyboardButton.WithCallbackData("Shox Med Center (Ойбек)")},
                             new[] {InlineKeyboardButton.WithCallbackData("Здоровая семья (Чилназар)")},
                             new[] {InlineKeyboardButton.WithCallbackData("Shox International Hospital(Аэропорт)")},
-                            new[] {InlineKeyboardButton.WithCallbackData("\xD83D\xDD19 Назад", "showappointmentlist")}
+                            new[] {InlineKeyboardButton.WithCallbackData(Options.Back, Options.ShowAppointmentList)}
                         });
                         break;
                     case "x-ray":
@@ -78,7 +79,7 @@ namespace TelegramBot.Classes
                         {
                             new[] {InlineKeyboardButton.WithCallbackData("Shox Med Center (Ойбек)")},
                             new[] {InlineKeyboardButton.WithCallbackData("Здоровая семья (Чилназар)")},
-                            new[] {InlineKeyboardButton.WithCallbackData("\xD83D\xDD19 Назад", "showappointmentlist")}
+                            new[] {InlineKeyboardButton.WithCallbackData(Options.Back, Options.ShowAppointmentList)}
                         });
                         break;
                     case "specialists":
@@ -93,11 +94,10 @@ namespace TelegramBot.Classes
                             new[] {InlineKeyboardButton.WithCallbackData("Первичный осмотр в отделении")},
                             new[] {InlineKeyboardButton.WithCallbackData("Пластический хирург")},
                             new[] {InlineKeyboardButton.WithCallbackData("Протокол ТЛБАП")},
-                            new[] {InlineKeyboardButton.WithCallbackData("\xD83D\xDD19 Назад", "showappointmentlist"), }
+                            new[] {InlineKeyboardButton.WithCallbackData(Options.Back, Options.ShowAppointmentList), }
                         });
                         break;
                 }
-
 
                 await botClient.EditMessageTextAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId,
                     builder.ToString(), replyMarkup: selectionInlineKeyboard);

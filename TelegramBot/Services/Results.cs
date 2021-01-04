@@ -3,8 +3,9 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramBot.Helpers;
 
-namespace TelegramBot.Classes
+namespace TelegramBot.Services
 {
     public static class Results
     {
@@ -17,11 +18,8 @@ namespace TelegramBot.Classes
 
             var cancelKeyboardMarkup = new ReplyKeyboardMarkup(new[]
             {
-                new KeyboardButton[]
-                {
-                    "0x274C Отмена"
-                }
-            });
+                new KeyboardButton[] {Options.Cancel}
+            }, resizeKeyboard: true);
 
             await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString(),
                 replyMarkup: cancelKeyboardMarkup);

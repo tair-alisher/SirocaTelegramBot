@@ -3,7 +3,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TelegramBot.Classes
+namespace TelegramBot.Services
 {
     public static class ServicesSearch
     {

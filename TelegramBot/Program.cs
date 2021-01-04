@@ -8,7 +8,8 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using TelegramBot.Classes;
+using TelegramBot.Helpers;
+using TelegramBot.Services;
 
 namespace TelegramBot
 {
@@ -22,7 +23,6 @@ namespace TelegramBot
 
             var cancellationTokenSource = new CancellationTokenSource();
 
-            // _bot.OnMessage += Bot_OnMessage;
             _bot.StartReceiving(new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync),
                 cancellationTokenSource.Token);
 
@@ -62,35 +62,58 @@ namespace TelegramBot
             if (message.Type != MessageType.Text)
                 return;
 
-            var filteredMessage = Configuration.FilterEmojiAndGetFirstWord(message.Text);
+            Task action;
+            if (message.Text.Equals(Options.StartCommand))
+                action = Common.SendStartMessage(_bot, message);
+            else if (message.Text.Equals(Options.ClinicInformation))
+                action = ClinicInformation.SendInformationAboutClinic(_bot, message);
+            else if (message.Text.Equals(Options.MobileLaboratory))
+                action = MobileLaboratory.SendPhoneNumberRequestMessage(_bot, message);
+            else if (message.Text.Equals(Options.BloodTestPoints))
+                action = BloodTestPoints.SendBloodTestPointsLocations(_bot, message);
+            else if (message.Text.Equals(Options.CallCenter))
+                action = CallCenter.SendPhoneNumberRequestMessage(_bot, message);
+            else if (message.Text.Equals(Options.LaboratoryServicesPrice))
+                action = LaboratoryServicesPrice.SendLaboratoryServicesPrice(_bot, message);
+            else if (message.Text.Equals(Options.MedicalServicesPrice))
+                action = MedicalServicesPrice.SendMedicalServicesPrice(_bot, message);
+            else if (message.Text.Equals(Options.FirstClinicInfoCommand))
+                action = Appointment.SendClinicInformation_1(_bot, message);
+            else if (message.Text.Equals(Options.SecondClinicInfoCommand))
+                action = Appointment.SendClinicInformation_2(_bot, message);
+            else if (message.Text.Equals(Options.ThirdClinicInfoCommand))
+                action = Appointment.SendClinicInformation_3(_bot, message);
+            else if (message.Text.Equals(Options.ServicesSearch))
+                action = ServicesSearch.SendSearchInlineMarkup(_bot, message);
+            else if (message.Text.Equals(Options.Appointment))
+                action = Appointment.SendAppointmentInlineMarkup(_bot, message);
+            else if (message.Text.Equals(Options.Results))
+                action = Results.SendInstructionMessage(_bot, message);
+            else if (message.Text.Equals(Options.HandwritingDirection) || message.Text.Equals(Options.CallAnAmbulance))
+                action = Common.SendUserPhoneNumberRequiredMessage(_bot, message);
+            else if (message.Text.Equals(Options.Cancel))
+                action = Common.SendStartMessage(_bot, message);
+            else
+                action = Common.SendStartMessage(_bot, message);
 
-            var action = filteredMessage switch
-            {
-                "/start" => Start.SendStartMessage(_bot, message),
-                "/info1" => Appointment.SendClinicInformation_1(_bot, message),
-                "/info2" => Appointment.SendClinicInformation_2(_bot, message),
-                "/info3" => Appointment.SendClinicInformation_3(_bot, message),
-                "поиск" => ServicesSearch.SendSearchInlineMarkup(_bot, message),
-                "запись" => Appointment.SendAppointmentInlineMarkup(_bot, message),
-                "результаты" => Results.SendInstructionMessage(_bot, message),
-                _ => Start.SendStartMessage(_bot, message)
-            };
             await action;
 
-            await _bot.SendTextMessageAsync(message.Chat.Id, $"Received: {message.Text}, {filteredMessage}");
+            // await _bot.SendTextMessageAsync(message.Chat.Id, $"Received: {message.Text}");
         }
 
         static async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery)
         {
-            var filteredMessage = Configuration.FilterEmojiAndGetFirstWord(callbackQuery.Data);
-            var action = filteredMessage switch
-            {
-                "appointment" => Appointment.SendClinicSelectionMarkup(_bot, callbackQuery),
-                "showappointmentlist" => Appointment.SendAppointmentInlineMarkup(_bot, callbackQuery),
-                _ => null
-            };
-            if (action != null)
-                await action;
+            Task action;
+            if (callbackQuery.Data.Equals(Options.ShowAppointmentList))
+                action = Appointment.SendAppointmentInlineMarkup(_bot, callbackQuery);
+            else if (callbackQuery.Data.Contains("appointment"))
+                action = Appointment.SendClinicSelectionMarkup(_bot, callbackQuery);
+            else if (callbackQuery.Data.Contains(Options.BloodPoint))
+                action = BloodTestPoints.SendBloodTestPointLocation(_bot, callbackQuery);
+            else
+                action = Common.SendStartMessage(_bot, callbackQuery.Message);
+
+            await action;
 
             // await _bot.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"Received: {callbackQuery.Data}, {filteredMessage}");
         }
