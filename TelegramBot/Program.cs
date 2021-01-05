@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -8,6 +6,7 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBot.Helpers;
 using TelegramBot.Services;
 
@@ -59,16 +58,35 @@ namespace TelegramBot
         static async Task BotOnMessageReceived(Message message)
         {
             Console.WriteLine($"Receive message type: {message.Type}");
-            if (message.Type != MessageType.Text)
-                return;
+            switch (message.Type)
+            {
+                case MessageType.Text:
+                    await Route(message);
+                    break;
+                case MessageType.Contact:
+                    await _bot.SendTextMessageAsync(message.Chat.Id,
+                        $"Your number: {message.Contact.PhoneNumber}. Your name: {message.Contact.LastName} {message.Contact.FirstName}. Reply to message: {message.ReplyToMessage.Text}", replyMarkup: null);
+                    break;
+                default:
+                    return;
+            }
 
+            // await _bot.SendTextMessageAsync(message.Chat.Id, $"Message. Received: {message.Text}, {message.Contact.PhoneNumber}");
+        }
+
+        static async Task Route(Message message)
+        {
             Task action;
             if (message.Text.Equals(Options.StartCommand))
                 action = Common.SendStartMessage(_bot, message);
+            else if (message.Text.Equals(Options.TestResults))
+                action = TestResults.SendInstructionMessage(_bot, message);
             else if (message.Text.Equals(Options.ClinicInformation))
                 action = ClinicInformation.SendInformationAboutClinic(_bot, message);
             else if (message.Text.Equals(Options.MobileLaboratory))
                 action = MobileLaboratory.SendPhoneNumberRequestMessage(_bot, message);
+            else if (message.Text.Equals(Options.Covid))
+                action = CovidInformation.SendCovidInformationMessage(_bot, message);
             else if (message.Text.Equals(Options.BloodTestPoints))
                 action = BloodTestPoints.SendBloodTestPointsLocations(_bot, message);
             else if (message.Text.Equals(Options.CallCenter))
@@ -77,28 +95,12 @@ namespace TelegramBot
                 action = LaboratoryServicesPrice.SendLaboratoryServicesPrice(_bot, message);
             else if (message.Text.Equals(Options.MedicalServicesPrice))
                 action = MedicalServicesPrice.SendMedicalServicesPrice(_bot, message);
-            else if (message.Text.Equals(Options.FirstClinicInfoCommand))
-                action = Appointment.SendClinicInformation_1(_bot, message);
-            else if (message.Text.Equals(Options.SecondClinicInfoCommand))
-                action = Appointment.SendClinicInformation_2(_bot, message);
-            else if (message.Text.Equals(Options.ThirdClinicInfoCommand))
-                action = Appointment.SendClinicInformation_3(_bot, message);
-            else if (message.Text.Equals(Options.ServicesSearch))
-                action = ServicesSearch.SendSearchInlineMarkup(_bot, message);
-            else if (message.Text.Equals(Options.Appointment))
-                action = Appointment.SendAppointmentInlineMarkup(_bot, message);
-            else if (message.Text.Equals(Options.Results))
-                action = Results.SendInstructionMessage(_bot, message);
-            else if (message.Text.Equals(Options.HandwritingDirection) || message.Text.Equals(Options.CallAnAmbulance))
-                action = Common.SendUserPhoneNumberRequiredMessage(_bot, message);
             else if (message.Text.Equals(Options.Cancel))
                 action = Common.SendStartMessage(_bot, message);
             else
                 action = Common.SendStartMessage(_bot, message);
 
             await action;
-
-            // await _bot.SendTextMessageAsync(message.Chat.Id, $"Received: {message.Text}");
         }
 
         static async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery)
@@ -115,7 +117,7 @@ namespace TelegramBot
 
             await action;
 
-            // await _bot.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"Received: {callbackQuery.Data}, {filteredMessage}");
+            // await _bot.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"CallbackQuery. Received: {callbackQuery.Data}");
         }
 
         static Task BotOnInlineQueryReceived(InlineQuery inlineQuery)
@@ -126,7 +128,7 @@ namespace TelegramBot
 
         static Task BotOnChosenInlineResultReceived(ChosenInlineResult chosenInlineResult)
         {
-            Console.WriteLine($"Received inline result: {chosenInlineResult.ResultId}");
+            Console.WriteLine($"Received chosen inline result: {chosenInlineResult.ResultId}");
             return Task.CompletedTask;
         }
 

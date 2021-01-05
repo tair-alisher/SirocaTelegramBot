@@ -19,31 +19,16 @@ namespace TelegramBot.Services
             var generalKeyboardMarkup = new ReplyKeyboardMarkup(
                 new[]
                 {
+                    new KeyboardButton[] {Options.Appointment},
+                    new KeyboardButton[] {Options.TestResults, Options.ClinicInformation},
+                    new KeyboardButton[] {Options.MobileLaboratory, Options.Covid},
                     new KeyboardButton[] {Options.BloodTestPoints, Options.CallCenter},
-                    new KeyboardButton[] {Options.LaboratoryServicesPrice, Options.MedicalServicesPrice},
-                    new KeyboardButton[] {Options.Appointment, Options.Results},
-                    new KeyboardButton[] {Options.HandwritingDirection, Options.ServicesSearch},
-                    new KeyboardButton[] {Options.CallMeBack},
-                    new KeyboardButton[] {Options.CallAnAmbulance},
+                    new KeyboardButton[] {Options.LaboratoryServicesPrice, Options.MedicalServicesPrice}
                 }, resizeKeyboard: true);
 
 
             await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString(),
                 replyMarkup: generalKeyboardMarkup);
-        }
-
-        public static async Task SendUserPhoneNumberRequiredMessage(ITelegramBotClient botClient, Message message)
-        {
-            var builder = new StringBuilder("Отправьте свой номер телефона в формате 998912345678 или отправьте контакт с телефонной книжки");
-
-            var phoneNumberSendMarkup = new ReplyKeyboardMarkup(new[]
-            {
-                new[] {new KeyboardButton(Options.MyPhoneNumber) {RequestContact = true}},
-                new KeyboardButton[] {Options.Cancel}
-            }, resizeKeyboard: true);
-
-            await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString(),
-                replyMarkup: phoneNumberSendMarkup);
         }
     }
 }
