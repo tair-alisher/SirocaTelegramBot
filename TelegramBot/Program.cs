@@ -88,7 +88,7 @@ namespace TelegramBot
             else if (message.Text.Equals(Options.Covid))
                 action = CovidInformation.SendCovidInformationMessage(_bot, message);
             else if (message.Text.Equals(Options.BloodTestPoints))
-                action = BloodTestPoints.SendBloodTestPointsLocations(_bot, message);
+                action = SamplingPoints.SendSamplingPointsLocations(_bot, message);
             else if (message.Text.Equals(Options.CallCenter))
                 action = CallCenter.SendPhoneNumberRequestMessage(_bot, message);
             else if (message.Text.Equals(Options.LaboratoryServicesPrice))
@@ -110,8 +110,8 @@ namespace TelegramBot
                 action = Appointment.SendAppointmentInlineMarkup(_bot, callbackQuery);
             else if (callbackQuery.Data.Contains("appointment"))
                 action = Appointment.SendClinicSelectionMarkup(_bot, callbackQuery);
-            else if (callbackQuery.Data.Contains(Options.BloodPoint))
-                action = BloodTestPoints.SendBloodTestPointLocation(_bot, callbackQuery);
+            else if (callbackQuery.Data.Contains(Options.SamplingPoint))
+                action = SamplingPoints.SendSamplingPointLocation(_bot, callbackQuery);
             else
                 action = Common.SendStartMessage(_bot, callbackQuery.Message);
 

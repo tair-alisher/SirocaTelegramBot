@@ -8,7 +8,7 @@
         public const string ThirdClinicInfoCommand = "/info3";
         public const string ShowAppointmentList = "showappointmentlist";
         public const string MyPhoneNumber = "Мой номер телефона";
-        public const string BloodPoint = "blood_point";
+        public const string SamplingPoint = "blood_point";
 
         public static readonly string ServicesSearch = $"{char.ConvertFromUtf32(	0x1F50E)} Поиск услуг (цены)";
         public static readonly string HandwritingDirection = $"{char.ConvertFromUtf32(0x1F648)} Разбор почерка направления";
