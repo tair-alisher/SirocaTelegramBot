@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramBot.Helpers;
 
 namespace TelegramBot.Services
 {
@@ -9,7 +10,8 @@ namespace TelegramBot.Services
     {
         public static async Task SendInformationAboutClinic(ITelegramBotClient botClient, Message message)
         {
-            var builder = new StringBuilder("Базовая информаци о клинике");
+            var information = await ApiActions.GetClinicInformationAsync();
+            var builder = new StringBuilder(information);
 
             await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString());
         }

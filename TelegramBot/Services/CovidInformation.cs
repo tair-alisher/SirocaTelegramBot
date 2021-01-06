@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using TelegramBot.Helpers;
 
 namespace TelegramBot.Services
 {
@@ -9,7 +10,8 @@ namespace TelegramBot.Services
     {
         public static async Task SendCovidInformationMessage(ITelegramBotClient botClient, Message message)
         {
-            var builder = new StringBuilder("Общая информация о ковид и какие анализы делают в лаборатории для ковида");
+            var information = await ApiActions.GetCovid19InformationAsync();
+            var builder = new StringBuilder(information);
 
             await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString());
         }

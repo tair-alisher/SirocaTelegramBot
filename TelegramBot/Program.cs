@@ -6,7 +6,6 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBot.Helpers;
 using TelegramBot.Services;
 

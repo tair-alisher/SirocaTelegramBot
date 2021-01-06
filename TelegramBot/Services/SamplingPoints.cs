@@ -17,7 +17,7 @@ namespace TelegramBot.Services
             var builder = new StringBuilder("Пункты сдачи анализов");
             var locationsList =
                 new InlineKeyboardMarkup(
-                    Utils.GetSamplingPointsInlineKeyboard(samplingPoints.Data.Select(p => p.Name).ToArray()));
+                    Utils.GetSamplingPointsInlineKeyboard(samplingPoints.Select(p => p.Name).ToArray()));
 
             await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString(), replyMarkup: locationsList);
         }
