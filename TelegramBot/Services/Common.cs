@@ -16,7 +16,15 @@ namespace TelegramBot.Services
             builder.AppendLine("Чтобы начать нажмите /start.");
             builder.AppendLine("Чтобы получить помощь нажмите /help.");
 
-            var generalKeyboardMarkup = new ReplyKeyboardMarkup(
+            var generalKeyboardMarkup = GetCommonReplyKeyboardMarkup();
+
+            await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString(),
+                replyMarkup: generalKeyboardMarkup);
+        }
+
+        public static ReplyKeyboardMarkup GetCommonReplyKeyboardMarkup()
+        {
+            return new ReplyKeyboardMarkup(
                 new[]
                 {
                     new KeyboardButton[] {Options.Appointment},
@@ -25,10 +33,6 @@ namespace TelegramBot.Services
                     new KeyboardButton[] {Options.BloodTestPoints, Options.CallCenter},
                     new KeyboardButton[] {Options.LaboratoryServicesPrice, Options.MedicalServicesPrice}
                 }, resizeKeyboard: true);
-
-
-            await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString(),
-                replyMarkup: generalKeyboardMarkup);
         }
     }
 }

@@ -4,7 +4,7 @@
     {
         public const string StartCommand = "/start";
         public const string ShowAppointmentList = "showappointmentlist";
-        public const string MyPhoneNumber = "Мой номер телефона";
+        public const string SendMyPhoneNumber = "Отправить мой номер телефона";
         public const string SamplingPoint = "blood_point";
 
         public static readonly string Appointment = $"{char.ConvertFromUtf32(0x1F4DD)} Запись на прием к врачу";
@@ -19,5 +19,10 @@
 
         public static readonly string Back = $"{char.ConvertFromUtf32(0x1F519)} Назад";
         public static readonly string Cancel = $"{char.ConvertFromUtf32(0x274C)} Отмена";
+
+        public const string MobileLaboratorySendYourPhoneNumber =
+            "(Выездная лаборатория) Отправьте номер телефона для обратной связи";
+
+        public const string CallCenterSendYourPhoneNumber = "(Колл-центр) Отправьте номер телефона для обратной связи";
     }
 }

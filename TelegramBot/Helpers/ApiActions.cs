@@ -90,5 +90,21 @@ namespace TelegramBot.Helpers
 
             return services.Data;
         }
+
+        /// <summary>
+        /// Sends user's phone number and
+        /// </summary>
+        /// <param name="phoneNumber">User's phone number</param>
+        /// <param name="category">Category type</param>
+        public static async Task<bool> SendPhoneNumber(string phoneNumber, ServiceType category)
+        {
+            var client = new RestClient(ApiUrls.BaseUrl);
+            var request = new RestRequest(ApiUrls.PostFeedBackRequest, Method.POST, DataFormat.Json);
+            request.AddUrlSegment("phoneNo", phoneNumber);
+            request.AddUrlSegment("category", category.ToString());
+            var response = await client.ExecuteAsync(request);
+
+            return JsonConvert.DeserializeObject<ResponseModel<string>>(response.Content).IsSuccess;
+        }
     }
 }

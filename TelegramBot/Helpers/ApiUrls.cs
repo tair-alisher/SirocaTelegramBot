@@ -29,5 +29,11 @@
         /// Url to request information about sampling points
         /// </summary>
         public const string GetSamplingPoints = "api/Auxiliary/GetSamplingPoints?request=1&key=1";
+
+        /// <summary>
+        /// Url to send phone number
+        /// </summary>
+        public const string PostFeedBackRequest =
+            "api/Auxiliary/PostFeedBackRequest?request=1&phoneNo={phoneNo}&category={category}";
     }
 }

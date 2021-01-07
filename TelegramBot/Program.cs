@@ -6,6 +6,7 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TelegramBot.Enums;
 using TelegramBot.Helpers;
 using TelegramBot.Services;
 
@@ -63,11 +64,9 @@ namespace TelegramBot
                     await Route(message);
                     break;
                 case MessageType.Contact:
-                    await _bot.SendTextMessageAsync(message.Chat.Id,
-                        $"Your number: {message.Contact.PhoneNumber}. Your name: {message.Contact.LastName} {message.Contact.FirstName}. Reply to message: {message.ReplyToMessage.Text}", replyMarkup: null);
+                    if (message.ReplyToMessage != null)
+                        await SendPhoneNumber(message);
                     break;
-                default:
-                    return;
             }
 
             // await _bot.SendTextMessageAsync(message.Chat.Id, $"Message. Received: {message.Text}, {message.Contact.PhoneNumber}");
@@ -75,7 +74,7 @@ namespace TelegramBot
 
         static async Task Route(Message message)
         {
-            Task action;
+            Task action = null;
             if (message.Text.Equals(Options.StartCommand))
                 action = Common.SendStartMessage(_bot, message);
             else if (message.Text.Equals(Options.TestResults))
@@ -96,10 +95,24 @@ namespace TelegramBot
                 action = MedicalServicesPrice.SendMedicalServicesPrice(_bot, message);
             else if (message.Text.Equals(Options.Cancel))
                 action = Common.SendStartMessage(_bot, message);
-            else
-                action = Common.SendStartMessage(_bot, message);
 
-            await action;
+            if (action != null)
+                await action;
+        }
+
+        static async Task SendPhoneNumber(Message message)
+        {
+            var category = message.ReplyToMessage.Text == Options.MobileLaboratorySendYourPhoneNumber
+                ? ServiceType.OnsiteLab
+                : ServiceType.Common;
+
+            var result = await ApiActions.SendPhoneNumber(message.Contact.PhoneNumber, category);
+            if (result)
+                await _bot.SendTextMessageAsync(message.Chat.Id, "С Вами свяжется наш оператор",
+                    replyMarkup: Common.GetCommonReplyKeyboardMarkup());
+            else
+                await _bot.SendTextMessageAsync(message.Chat.Id, "Произошла ошибка",
+                    replyMarkup: Common.GetCommonReplyKeyboardMarkup());
         }
 
         static async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery)
