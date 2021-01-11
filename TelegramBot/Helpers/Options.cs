@@ -7,7 +7,7 @@
         public const string SendMyPhoneNumber = "Отправить мой номер телефона";
         public const string SamplingPoint = "blood_point";
 
-        public static readonly string Appointment = $"{char.ConvertFromUtf32(0x1F4DD)} Запись на прием к врачу";
+        public static readonly string Appointment = $"{char.ConvertFromUtf32(0x1F4DD)} Онлайн запись";
         public static readonly string TestResults = $"{char.ConvertFromUtf32(0x2705)} Результаты анализов";
         public static readonly string ClinicInformation = $"{char.ConvertFromUtf32(0x2139)} Информация о клинике";
         public static readonly string MobileLaboratory = $"{char.ConvertFromUtf32(0x1F691)} Выездная лаборатория";
