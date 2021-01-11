@@ -92,9 +92,9 @@ namespace TelegramBot
             else if (message.Text.Equals(Options.CallCenter))
                 action = CallCenter.SendPhoneNumberRequestMessage(_bot, message);
             else if (message.Text.Equals(Options.LaboratoryServicesPrice))
-                action = LaboratoryServicesPrice.SendLaboratoryServicesPrice(_bot, message);
+                action = LaboratoryServicesPrice.SendSearchLaboratoryServicesMarkup(_bot, message);
             else if (message.Text.Equals(Options.MedicalServicesPrice))
-                action = MedicalServicesPrice.SendMedicalServicesPrice(_bot, message);
+                action = MedicalServicesPrice.SendSearchMedicalServicesMarkup(_bot, message);
             else if (message.Text.Equals(Options.Cancel))
                 action = Common.SendStartMessage(_bot, message);
             else if (message.ViaBot != null && message.ViaBot.Username == _botUsername)

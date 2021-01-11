@@ -6,25 +6,22 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.InlineQueryResults;
+using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBot.Helpers;
 
 namespace TelegramBot.Services
 {
     public static class LaboratoryServicesPrice
     {
-        public static async Task SendLaboratoryServicesPrice(ITelegramBotClient botClient, Message message)
+        public static async Task SendSearchLaboratoryServicesMarkup(ITelegramBotClient botClient, Message message)
         {
-            var services = await ApiActions.GetLaboratoryServices();
-            services = services.Take(10).ToList();
+            var builder = new StringBuilder("Нажмите на кнопку ниже для поиска услуги лаборатории");
+            var searchKeyboard = new InlineKeyboardMarkup(new[]
+            {
+                new[] {InlineKeyboardButton.WithSwitchInlineQueryCurrentChat("Поиск услуг лаборатории", $"{Options.LaboratoryServicesShortCut} {Configuration.DefaultLaboratoryService}") }
+            });
 
-            var builder = new StringBuilder();
-            builder.AppendLine("Цены на услуги лаборатории");
-            builder.AppendLine();
-
-            foreach (var service in services)
-                builder.AppendLine($"{service.Name} - {service.Price} ({service.SpecialityName})\n");
-
-            await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString());
+            await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString(), replyMarkup: searchKeyboard);
         }
 
         public static async Task FindLaboratoryServices(ITelegramBotClient botClient, InlineQuery inlineQuery, string searchValue)
@@ -36,18 +33,20 @@ namespace TelegramBot.Services
             var results = new List<InlineQueryResultBase>();
             foreach (var service in filteredServices)
                 results.Add(new InlineQueryResultArticle(service.Id.ToString(), service.Name,
-                    new InputTextMessageContent($"{Options.LaboratoryServicesShortCut}_{service.Name}")));
+                    new InputTextMessageContent($"{Options.LaboratoryServicesShortCut} {service.Name}")));
 
-            await botClient.AnswerInlineQueryAsync(inlineQuery.Id, results);
+            await botClient.AnswerInlineQueryAsync(inlineQuery.Id, results, cacheTime: 0);
         }
 
         public static async Task SendLaboratoryServiceInfoAsync(ITelegramBotClient botClient, Message message)
         {
             var laboratoryServices = await ApiActions.GetLaboratoryServices();
-            var serviceName = message.Text.Split(' ').Last();
+            var serviceName = message.Text.Replace(Options.LaboratoryServicesShortCut, "").TrimStart();
             var service = laboratoryServices.First(s => s.Name == serviceName);
 
-            await botClient.EditMessageTextAsync(message.Chat.Id, message.MessageId, $"Стоимость услуги '{service.Name}' {service.Price}");
+            await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
+            await botClient.SendTextMessageAsync(message.Chat.Id,
+                string.Format(Configuration.ServicePriceTemplate, service.Name, service.Price));
         }
     }
 }

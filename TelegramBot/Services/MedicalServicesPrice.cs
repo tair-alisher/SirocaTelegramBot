@@ -6,25 +6,23 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.InlineQueryResults;
+using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBot.Helpers;
 
 namespace TelegramBot.Services
 {
     public static class MedicalServicesPrice
     {
-        public static async Task SendMedicalServicesPrice(ITelegramBotClient botClient, Message message)
+        public static async Task SendSearchMedicalServicesMarkup(ITelegramBotClient botClient, Message message)
         {
-            var services = await ApiActions.GetMedicalServices();
-            services = services.Take(10).ToList();
 
-            var builder = new StringBuilder();
-            builder.AppendLine("Цены на услуги врачей");
-            builder.AppendLine();
+            var builder = new StringBuilder("Нажмите на кнопку ниже для поиска услуги врача");
+            var searchKeyboard = new InlineKeyboardMarkup(new[]
+            {
+                new[] {InlineKeyboardButton.WithSwitchInlineQueryCurrentChat("Поиск услуг врача", $"{Options.MedicalServicesShortCut} {Configuration.DefaultMedicalService}") }
+            });
 
-            foreach (var service in services)
-                builder.AppendLine($"{service.Name} - {service.Price} ({service.SpecialityName})\n");
-
-            await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString());
+            await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString(), replyMarkup: searchKeyboard);
         }
 
         public static async Task FindMedicalServices(ITelegramBotClient botClient, InlineQuery inlineQuery,
@@ -37,19 +35,20 @@ namespace TelegramBot.Services
             var results = new List<InlineQueryResultBase>();
             foreach (var service in filteredServices)
                 results.Add(new InlineQueryResultArticle(service.Id.ToString(), service.Name,
-                    new InputTextMessageContent($"({Options.MedicalServicesShortCut}) {service.Name}")));
+                    new InputTextMessageContent($"{Options.MedicalServicesShortCut} {service.Name}")));
 
-            await botClient.AnswerInlineQueryAsync(inlineQuery.Id, results);
+            await botClient.AnswerInlineQueryAsync(inlineQuery.Id, results, cacheTime: 0);
         }
 
         public static async Task SendMedicalServiceInfoAsync(ITelegramBotClient botClient, Message message)
         {
             var medicalServices = await ApiActions.GetMedicalServices();
-            var serviceName = message.Text.Split(' ').Last();
+            var serviceName = message.Text.Replace(Options.MedicalServicesShortCut, "").TrimStart();
             var service = medicalServices.First(s => s.Name == serviceName);
 
             await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
-            await botClient.SendTextMessageAsync(message.Chat.Id, $"Стоимость услуги '{service.Name}' {service.Price}");
+            await botClient.SendTextMessageAsync(message.Chat.Id,
+                string.Format(Configuration.ServicePriceTemplate, service.Name, service.Price));
         }
     }
 }
