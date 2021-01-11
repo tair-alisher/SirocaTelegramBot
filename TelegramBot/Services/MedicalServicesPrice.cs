@@ -37,7 +37,7 @@ namespace TelegramBot.Services
                 results.Add(new InlineQueryResultArticle(service.Id.ToString(), service.Name,
                     new InputTextMessageContent($"{Options.MedicalServicesShortCut} {service.Name}")));
 
-            await botClient.AnswerInlineQueryAsync(inlineQuery.Id, results, cacheTime: 0);
+            await botClient.AnswerInlineQueryAsync(inlineQuery.Id, results);
         }
 
         public static async Task SendMedicalServiceInfoAsync(ITelegramBotClient botClient, Message message)

@@ -4,5 +4,6 @@
     {
         public string Token { get; set; }
         public string Description { get; set; }
+        public string ApiBaseUrl { get; set; }
     }
 }

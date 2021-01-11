@@ -5,10 +5,20 @@
     /// </summary>
     public static class ApiUrls
     {
+        private static string _baseUrl;
         /// <summary>
         /// Base api address
         /// </summary>
-        public const string BaseUrl = "http://siroca.com:2122";
+        public static string BaseUrl {
+            get
+            {
+                if (!string.IsNullOrEmpty(_baseUrl))
+                    return _baseUrl;
+
+                _baseUrl = Settings.BotSettings.ApiBaseUrl;
+                return _baseUrl;
+            }
+        }
 
         /// <summary>
         /// Url to request information about the clinic

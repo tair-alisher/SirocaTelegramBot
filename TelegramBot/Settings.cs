@@ -1,16 +1,21 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.Configuration;
-using TelegramBot.Models;
 using TelegramBot.Models.AppSettings;
 
 namespace TelegramBot
 {
     public static class Settings
     {
-        public static IConfigurationRoot Configuration => new ConfigurationBuilder().SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName).AddJsonFile("appsettings.json", false).Build();
+        public static IConfigurationRoot Configuration => new ConfigurationBuilder()
+            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName).AddJsonFile("appsettings.json", false)
+            .Build();
+
 
         private static BotSettingsModel _botSettings;
+        /// <summary>
+        /// BotSettings - token, description, etc.
+        /// </summary>
         public static BotSettingsModel BotSettings
         {
             get
@@ -28,6 +33,9 @@ namespace TelegramBot
         }
 
         private static MessageTemplatesModel _messageTemplates;
+        /// <summary>
+        /// Templates for reply messages
+        /// </summary>
         public static MessageTemplatesModel MessageTemplates
         {
             get
@@ -45,6 +53,9 @@ namespace TelegramBot
         }
 
         private static DefaultValuesModel _defaultValues;
+        /// <summary>
+        /// Default values
+        /// </summary>
         public static DefaultValuesModel DefaultValues
         {
             get
