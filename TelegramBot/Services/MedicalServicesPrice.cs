@@ -19,7 +19,7 @@ namespace TelegramBot.Services
             var builder = new StringBuilder("Нажмите на кнопку ниже для поиска услуги врача");
             var searchKeyboard = new InlineKeyboardMarkup(new[]
             {
-                new[] {InlineKeyboardButton.WithSwitchInlineQueryCurrentChat("Поиск услуг врача", $"{Options.MedicalServicesShortCut} {Configuration.DefaultMedicalService}") }
+                new[] {InlineKeyboardButton.WithSwitchInlineQueryCurrentChat("Поиск услуг врача", $"{Options.MedicalServicesShortCut} {Settings.DefaultValues.DefaultMedicalService}") }
             });
 
             await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString(), replyMarkup: searchKeyboard);
@@ -48,7 +48,7 @@ namespace TelegramBot.Services
 
             await botClient.DeleteMessageAsync(message.Chat.Id, message.MessageId);
             await botClient.SendTextMessageAsync(message.Chat.Id,
-                string.Format(Configuration.ServicePriceTemplate, service.Name, service.Price));
+                string.Format(Settings.MessageTemplates.ServicePrice, service.Name, service.Price));
         }
     }
 }

@@ -11,10 +11,7 @@ namespace TelegramBot.Services
     {
         public static async Task SendStartMessage(ITelegramBotClient botClient, Message message)
         {
-            var builder = new StringBuilder();
-            builder.AppendLine("Этот бот поможет вам узнать об услугах сети клиник Shox International Hospital.");
-            builder.AppendLine("Чтобы начать нажмите /start.");
-            builder.AppendLine("Чтобы получить помощь нажмите /help.");
+            var builder = new StringBuilder(Settings.BotSettings.Description);
 
             var generalKeyboardMarkup = GetCommonReplyKeyboardMarkup();
 

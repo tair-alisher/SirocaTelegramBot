@@ -19,7 +19,7 @@ namespace TelegramBot
 
         static async Task Main()
         {
-            _bot = new TelegramBotClient(Configuration.Token);
+            _bot = new TelegramBotClient(Settings.BotSettings.Token);
 
             var cancellationTokenSource = new CancellationTokenSource();
 
