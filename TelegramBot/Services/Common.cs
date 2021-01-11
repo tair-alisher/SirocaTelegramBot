@@ -22,6 +22,14 @@ namespace TelegramBot.Services
                 replyMarkup: generalKeyboardMarkup);
         }
 
+        public static async Task SendMessageWithServicePrice(ITelegramBotClient botClient, Message message)
+        {
+            if (message.Text.Contains(Options.LaboratoryServicesShortCut))
+                await LaboratoryServicesPrice.SendLaboratoryServiceInfoAsync(botClient, message);
+            else if (message.Text.Contains(Options.MedicalServicesShortCut))
+                await MedicalServicesPrice.SendMedicalServiceInfoAsync(botClient, message);
+        }
+
         public static ReplyKeyboardMarkup GetCommonReplyKeyboardMarkup()
         {
             return new ReplyKeyboardMarkup(

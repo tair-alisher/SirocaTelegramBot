@@ -24,5 +24,8 @@
             "(Выездная лаборатория) Отправьте номер телефона для обратной связи";
 
         public const string CallCenterSendYourPhoneNumber = "(Колл-центр) Отправьте номер телефона для обратной связи";
+
+        public const string LaboratoryServicesShortCut = "lab";
+        public const string MedicalServicesShortCut = "med";
     }
 }

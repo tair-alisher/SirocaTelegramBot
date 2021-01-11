@@ -15,6 +15,7 @@ namespace TelegramBot
     class Program
     {
         private static ITelegramBotClient _bot;
+        private static string _botUsername;
 
         static async Task Main()
         {
@@ -26,6 +27,7 @@ namespace TelegramBot
                 cancellationTokenSource.Token);
 
             var botInfo = await _bot.GetMeAsync();
+            _botUsername = botInfo.Username;
             Console.WriteLine($"Start listening for {botInfo.Username}");
             Console.ReadLine();
 
@@ -95,6 +97,8 @@ namespace TelegramBot
                 action = MedicalServicesPrice.SendMedicalServicesPrice(_bot, message);
             else if (message.Text.Equals(Options.Cancel))
                 action = Common.SendStartMessage(_bot, message);
+            else if (message.ViaBot != null && message.ViaBot.Username == _botUsername)
+                action = Common.SendMessageWithServicePrice(_bot, message);
 
             if (action != null)
                 await action;
@@ -132,10 +136,24 @@ namespace TelegramBot
             // await _bot.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"CallbackQuery. Received: {callbackQuery.Data}");
         }
 
-        static Task BotOnInlineQueryReceived(InlineQuery inlineQuery)
+        static async Task BotOnInlineQueryReceived(InlineQuery inlineQuery)
         {
             Console.WriteLine($"Received inline query from: {inlineQuery.From.Id}");
-            return Task.CompletedTask;
+
+            var text = inlineQuery.Query;
+            if (text.Split(' ').Length > 1)
+            {
+                if (text.Contains(Options.LaboratoryServicesShortCut))
+                {
+                    var searchValue = text.Replace(Options.LaboratoryServicesShortCut, "").Trim();
+                    await LaboratoryServicesPrice.FindLaboratoryServices(_bot, inlineQuery, searchValue);
+                }
+                else if (text.Contains(Options.MedicalServicesShortCut))
+                {
+                    var searchValue = text.Replace(Options.MedicalServicesShortCut, "").Trim();
+                    await MedicalServicesPrice.FindMedicalServices(_bot, inlineQuery, searchValue);
+                }
+            }
         }
 
         static Task BotOnChosenInlineResultReceived(ChosenInlineResult chosenInlineResult)

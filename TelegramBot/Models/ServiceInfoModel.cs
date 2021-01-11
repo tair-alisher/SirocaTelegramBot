@@ -11,7 +11,5 @@
         public string SpecialityName { get; set; }
         public int SpecialityId { get; set; }
         public int TimeMin { get; set; }
-
-        public string Information => $"{Name} - {Price} ({SpecialityName})";
     }
 }
