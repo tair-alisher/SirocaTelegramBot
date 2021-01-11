@@ -79,6 +79,8 @@ namespace TelegramBot
             Task action = null;
             if (message.Text.Equals(Options.StartCommand))
                 action = Common.SendStartMessage(_bot, message);
+            else if (message.Text.Equals(Options.Appointment))
+                action = Appointment.SendAppointmentLink(_bot, message);
             else if (message.Text.Equals(Options.TestResults))
                 action = TestResults.SendInstructionMessage(_bot, message);
             else if (message.Text.Equals(Options.ClinicInformation))
@@ -122,11 +124,7 @@ namespace TelegramBot
         static async Task BotOnCallbackQueryReceived(CallbackQuery callbackQuery)
         {
             Task action;
-            if (callbackQuery.Data.Equals(Options.ShowAppointmentList))
-                action = Appointment.SendAppointmentInlineMarkup(_bot, callbackQuery);
-            else if (callbackQuery.Data.Contains("appointment"))
-                action = Appointment.SendClinicSelectionMarkup(_bot, callbackQuery);
-            else if (callbackQuery.Data.Contains(Options.SamplingPoint))
+            if (callbackQuery.Data.Contains(Options.SamplingPoint))
                 action = SamplingPoints.SendSamplingPointLocation(_bot, callbackQuery);
             else
                 action = Common.SendStartMessage(_bot, callbackQuery.Message);

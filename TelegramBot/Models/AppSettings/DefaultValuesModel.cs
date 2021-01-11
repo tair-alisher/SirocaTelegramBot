@@ -4,5 +4,6 @@
     {
         public string DefaultMedicalService { get; set; }
         public string DefaultLaboratoryService { get; set; }
+        public string AppointmentLink { get; set; }
     }
 }
