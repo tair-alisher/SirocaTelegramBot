@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -59,7 +60,6 @@ namespace TelegramBot
 
         static async Task BotOnMessageReceived(Message message)
         {
-            Console.WriteLine($"Receive message type: {message.Type}");
             switch (message.Type)
             {
                 case MessageType.Text:
@@ -70,8 +70,6 @@ namespace TelegramBot
                         await SendPhoneNumber(message);
                     break;
             }
-
-            // await _bot.SendTextMessageAsync(message.Chat.Id, $"Message. Received: {message.Text}, {message.Contact.PhoneNumber}");
         }
 
         static async Task Route(Message message)
@@ -79,6 +77,8 @@ namespace TelegramBot
             Task action = null;
             if (message.Text.Equals(Options.StartCommand))
                 action = Common.SendStartMessage(_bot, message);
+            else if (message.Text.Equals(Options.HelpCommand))
+                action = Common.SendHelpMessage(_bot, message);
             else if (message.Text.Equals(Options.Appointment))
                 action = Appointment.SendAppointmentLink(_bot, message);
             else if (message.Text.Equals(Options.TestResults))
@@ -101,6 +101,8 @@ namespace TelegramBot
                 action = Common.SendStartMessage(_bot, message);
             else if (message.ViaBot != null && message.ViaBot.Username == _botUsername)
                 action = Common.SendMessageWithServicePrice(_bot, message);
+            else if (new Regex(@"^[0-9]+\s[0-9A-Za-z]+$").IsMatch(message.Text))
+                action = TestResults.SendPdfWithTestResults(_bot, message);
 
             if (action != null)
                 await action;
@@ -136,8 +138,6 @@ namespace TelegramBot
 
         static async Task BotOnInlineQueryReceived(InlineQuery inlineQuery)
         {
-            Console.WriteLine($"Received inline query from: {inlineQuery.From.Id}");
-
             var text = inlineQuery.Query;
             if (text.Split(' ').Length > 1)
             {
@@ -156,13 +156,11 @@ namespace TelegramBot
 
         static Task BotOnChosenInlineResultReceived(ChosenInlineResult chosenInlineResult)
         {
-            Console.WriteLine($"Received chosen inline result: {chosenInlineResult.ResultId}");
             return Task.CompletedTask;
         }
 
         static Task UnknownUpdateHandlerAsync(Update update)
         {
-            Console.WriteLine($"Unknown update type: {update.Type}");
             return Task.CompletedTask;
         }
 

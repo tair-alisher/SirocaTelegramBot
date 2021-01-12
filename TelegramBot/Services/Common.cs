@@ -11,8 +11,16 @@ namespace TelegramBot.Services
     {
         public static async Task SendStartMessage(ITelegramBotClient botClient, Message message)
         {
-            var builder = new StringBuilder(Settings.BotSettings.Description);
+            var builder = new StringBuilder(Settings.BotSettings.BotDescription);
+            var generalKeyboardMarkup = GetCommonReplyKeyboardMarkup();
 
+            await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString(),
+                replyMarkup: generalKeyboardMarkup);
+        }
+
+        public static async Task SendHelpMessage(ITelegramBotClient botClient, Message message)
+        {
+            var builder = new StringBuilder(Settings.BotSettings.HelpDescription);
             var generalKeyboardMarkup = GetCommonReplyKeyboardMarkup();
 
             await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString(),

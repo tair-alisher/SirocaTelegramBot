@@ -1,8 +1,11 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.InputFiles;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramBot.Exceptions;
 using TelegramBot.Helpers;
 
 namespace TelegramBot.Services
@@ -21,6 +24,31 @@ namespace TelegramBot.Services
             }, resizeKeyboard: true);
 
             await botClient.SendTextMessageAsync(message.Chat.Id, builder.ToString(), replyMarkup: cancelKeyboard);
+        }
+
+        public static async Task SendPdfWithTestResults(ITelegramBotClient botClient, Message message)
+        {
+            await botClient.SendTextMessageAsync(message.Chat.Id, "Выполняет обработка запроса. Ожидайте");
+            var sessionId = await ApiActions.RequestSessionId();
+            if (string.IsNullOrEmpty(sessionId))
+            {
+                await botClient.SendTextMessageAsync(message.Chat.Id, "Ошибка");
+                return;
+            }
+
+            try
+            {
+                var codeWord = message.Text.Split(' ').Last();
+                var resultPdfString = await ApiActions.GetTestResults(sessionId, codeWord);
+                var resultPdf = new InputOnlineFile(resultPdfString, "Результаты анализов.pdf");
+                await botClient.SendDocumentAsync(message.Chat.Id, resultPdf, caption: "Результаты анализов",
+                    replyMarkup: Common.GetCommonReplyKeyboardMarkup());
+            }
+            catch (TestResultsPdfNotFound)
+            {
+                await botClient.SendTextMessageAsync(message.Chat.Id, "Результаты анализов не найдены",
+                    replyMarkup: Common.GetCommonReplyKeyboardMarkup());
+            }
         }
     }
 }

@@ -3,7 +3,7 @@
     public static class Options
     {
         public const string StartCommand = "/start";
-        public const string ShowAppointmentList = "showappointmentlist";
+        public const string HelpCommand = "/help";
         public const string SendMyPhoneNumber = "Отправить мой номер телефона";
         public const string SamplingPoint = "blood_point";
 

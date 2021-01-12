@@ -44,6 +44,16 @@
         /// Url to send phone number
         /// </summary>
         public const string PostFeedBackRequest =
-            "api/Auxiliary/PostFeedBackRequest?request=1&phoneNo={phoneNo}&category={category}";
+            "api/Auxiliary/PostFeedBackRequest?request=1&phoneNo={0}&category={1}";
+
+        /// <summary>
+        /// Url to request Session_id value
+        /// </summary>
+        public const string AuthWebApiUser = "api/User/AuthWebApiUser";
+
+        /// <summary>
+        /// Url to request test results
+        /// </summary>
+        public const string GeResultsByCodeWordAsPdf = "api/Appointment/GetResultsByCodeWordAsPdf?codeWord={0}";
     }
 }

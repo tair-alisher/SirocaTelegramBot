@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RestSharp;
 using TelegramBot.Enums;
+using TelegramBot.Exceptions;
 using TelegramBot.Models;
 
 namespace TelegramBot.Helpers
@@ -98,13 +101,44 @@ namespace TelegramBot.Helpers
         /// <param name="category">Category type</param>
         public static async Task<bool> SendPhoneNumber(string phoneNumber, ServiceType category)
         {
+            var postFeedBackRequest = string.Format(ApiUrls.PostFeedBackRequest, phoneNumber, category.ToString());
+
             var client = new RestClient(ApiUrls.BaseUrl);
-            var request = new RestRequest(ApiUrls.PostFeedBackRequest, Method.POST, DataFormat.Json);
-            request.AddUrlSegment("phoneNo", phoneNumber);
-            request.AddUrlSegment("category", category.ToString());
+            var request = new RestRequest(postFeedBackRequest, Method.POST, DataFormat.Json);
             var response = await client.ExecuteAsync(request);
 
             return JsonConvert.DeserializeObject<ResponseModel<string>>(response.Content).IsSuccess;
+        }
+
+        /// <summary>
+        /// Returns Session_id value
+        /// </summary>
+        public static async Task<string> RequestSessionId()
+        {
+            var response = await ExecuteGetRequestAsync(ApiUrls.AuthWebApiUser);
+            var apiUser = JsonConvert.DeserializeObject<ResponseModel<ApiUserModel>>(response.Content);
+
+            return !apiUser.IsSuccess ? string.Empty : apiUser.Data.SessionId;
+        }
+
+        /// <summary>
+        /// Returns test results pdf
+        /// </summary>
+        /// <param name="sessionId">Session id</param>
+        /// <param name="codeWord">Codeword</param>
+        public static async Task<Stream> GetTestResults(string sessionId, string codeWord)
+        {
+            var getResultsByCodeWordAsPdfUrl = string.Format(ApiUrls.GeResultsByCodeWordAsPdf, codeWord);
+
+            var client = new RestClient(ApiUrls.BaseUrl);
+            var request = new RestRequest(getResultsByCodeWordAsPdfUrl, Method.GET);
+            request.AddHeader("Session_id", sessionId);
+
+            var response = await client.ExecuteAsync(request);
+            if (response.StatusCode != HttpStatusCode.OK)
+                throw new TestResultsPdfNotFound();
+
+            return new MemoryStream(client.DownloadData(request));
         }
     }
 }
